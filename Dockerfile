@@ -1,15 +1,10 @@
-FROM maven:3.3-jdk-8-alpine
+FROM re6exp/debian-jessie-oracle-jdk-8:latest
 
-# add glibc dependency for opencv shared librairy
-COPY glibc-2.29-r0.apk ./
+RUN apt-get update
+RUN apt-get install -y maven
 
-run apk update
-
-RUN apk --allow-untrusted --force add glibc-2.29-r0.apk
-
-RUN mkdir -p src/main
-
-RUN mkdir static
+RUN	mkdir -p src/main && \
+	mkdir static
 
 COPY src/main src/main/
 
