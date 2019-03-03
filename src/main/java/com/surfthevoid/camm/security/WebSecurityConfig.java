@@ -1,6 +1,7 @@
 package com.surfthevoid.camm.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -26,16 +27,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	@Autowired
-	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-		//robert / simone
+	public void configureGlobal(
+			@Value("#{systemProperties.cammuser}") String user,
+			@Value("#{systemProperties.cammpassword}") String password,
+			AuthenticationManagerBuilder auth) throws Exception {
 		auth.inMemoryAuthentication()
-			.withUser("robert")
-			.password("$2a$04$8BwAb815V9x9TxlHjo2B1up2tlZhrlMyKD1NVRqwj.iyv3NE9qeCi")
+			.withUser(user)
+			.password(password)
 			.roles("USER");
 	}
 	
 	@Bean
 	public BCryptPasswordEncoder encoder() {
+		//online generator: https://www.bcrypt.fr/
 	    return new BCryptPasswordEncoder();
 	}
 }
