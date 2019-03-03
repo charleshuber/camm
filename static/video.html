@@ -1,0 +1,11 @@
+<html>
+	<head>
+	</head>
+	<body>
+		<img id="video" width="100%"/>
+	</body>
+	<script>
+		var video = document.getElementById("video");
+		var it = window.setInterval(() => video.src = 'state/' + new Date().getTime() + '.png', 500);
+	</script>
+</html>
