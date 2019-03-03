@@ -1,5 +1,12 @@
 FROM maven:3.3-jdk-8-alpine
 
+# add glibc dependency for opencv shared librairy
+COPY glibc-2.29-r0.apk ./
+
+run apk update
+
+RUN apk --allow-untrusted --force add glibc-2.29-r0.apk
+
 RUN mkdir -p src/main
 
 RUN mkdir static

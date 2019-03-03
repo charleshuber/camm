@@ -28,8 +28,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	public void configureGlobal(
-			@Value("#{systemProperties.cammuser}") String user,
-			@Value("#{systemProperties.cammpassword}") String password,
+			@Value("${cammuser}") String user,
+			@Value("${cammpassword}") String password,
 			AuthenticationManagerBuilder auth) throws Exception {
 		auth.inMemoryAuthentication()
 			.withUser(user)

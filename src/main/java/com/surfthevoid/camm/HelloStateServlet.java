@@ -18,7 +18,7 @@ public class HelloStateServlet extends HttpServlet   {
 	private String camurl;
 	private VideoStreamJavaCV videoStream;
 	
-	public HelloStateServlet(@Value("#{systemProperties.cammurl}") String camurl){
+	public HelloStateServlet(@Value("${cammurl}") String camurl){
 		this.camurl = camurl;
 		this.videoStream = new VideoStreamJavaCV(this.camurl);
 	}
@@ -29,6 +29,6 @@ public class HelloStateServlet extends HttpServlet   {
 	
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("image/png");
-    response.getOutputStream().write(videoStream.getBytes());
+        response.getOutputStream().write(videoStream.getBytes());
 	}
 } 
