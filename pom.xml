@@ -34,6 +34,13 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<executable>true</executable>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 	<dependencies>
@@ -42,14 +49,12 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		<dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
-		<!--  dependency>
-			<groupId>org.bytedeco.javacpp-presets</groupId>
-			<artifactId>ffmpeg-platform</artifactId>
-			<version>4.1-1.4.4</version>
-		</dependency -->
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+
+		<!-- dependency> <groupId>org.bytedeco.javacpp-presets</groupId> <artifactId>ffmpeg-platform</artifactId> 
+			<version>4.1-1.4.4</version> </dependency -->
 		<dependency>
 			<groupId>org.bytedeco</groupId>
 			<artifactId>javacv-platform</artifactId>
