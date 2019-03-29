@@ -1,32 +1,31 @@
 package com.surfthevoid.camm.video;
 
-import org.bytedeco.javacpp.opencv_core.Mat;
-import org.bytedeco.javacpp.opencv_imgcodecs;
-import org.bytedeco.javacpp.opencv_imgproc;
-import org.bytedeco.javacpp.opencv_videoio.VideoCapture;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
+import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.videoio.VideoCapture;
+import org.opencv.videoio.Videoio;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
+@Component
 public class VideoStreamJavaCV {
 	
-		
-		// the OpenCV object that realizes the video capture
+		private String cameraId;
 		private VideoCapture capture = new VideoCapture();
 		
-		
-		public VideoStreamJavaCV(String cameraId){
-			// start the video capture
-			this.capture.open(cameraId);
+		public VideoStreamJavaCV(@Value("${cammurl}") String cameraId){
+			this.cameraId = cameraId;
 		}
 		
 		public byte[] getBytes(){
 			try{
-				// is the video stream available?
-				if (this.capture.isOpened()){
-					// effectively grab and process a single frame
-					Mat frame = grabFrame();
-					byte[] result = new byte[frame.arraySize()];
-					opencv_imgcodecs.imencode(".png", frame, result);
-					return result;
+				if (open()){
+					Mat original = grabFrame();
+					MatOfByte buf = new MatOfByte();
+					Imgcodecs.imencode(".jpg", original, buf);
+					return buf.toArray();
 				} else {
 					// log the error
 					System.err.println("Impossible to open the camera connection...");
@@ -37,11 +36,26 @@ public class VideoStreamJavaCV {
 			return new byte[0];
 		}
 		
+		public void close(){
+			if(this.capture.isOpened()){
+				this.capture.release();
+			}
+		}
+		
+		private Boolean open(){
+			if (this.capture.isOpened()){
+				return true;
+			}
+			this.capture.open(cameraId, Videoio.CAP_ANY);
+			return this.capture.isOpened();
+		}
+		
 		/**
 		 * Get a frame from the opened video stream (if any)
 		 *
 		 * @return the {@link Mat} to show
 		 */
+	
 		private Mat grabFrame() {
 			// init everything
 			Mat frame = new Mat();
@@ -51,7 +65,7 @@ public class VideoStreamJavaCV {
 				this.capture.read(frame);
 				// if the frame is not empty, process it
 				if (!frame.empty()){
-					opencv_imgproc.cvtColor(frame, frame, Imgproc.COLOR_BGR2GRAY);
+					Imgproc.cvtColor(frame, frame, Imgproc.COLOR_BGR2GRAY);
 				}		
 			}
 			catch (Exception e){
@@ -63,8 +77,7 @@ public class VideoStreamJavaCV {
 		@Override
 		protected void finalize() throws Throwable {
 			super.finalize();
-			if(this.capture.isOpened()){
-				this.capture.release();
-			}
+			this.close();
 		}
+		
 }
