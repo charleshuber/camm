@@ -18,12 +18,14 @@ public class PSNRTracker {
 	
 	private final Log log = LogFactory.getLog(PSNRTracker.class);
 	
+	private MailSender mailSender;
 	private VideoSource videoSource;
 	private Mat I1;
 	private Mat I2;
 	
-	public PSNRTracker(VideoSource videoSource){
+	public PSNRTracker(VideoSource videoSource, MailSender mailSender){
 		this.videoSource = videoSource;
+		this.mailSender = mailSender;
 	}
 	
 	@Scheduled(fixedRate = 1000)
@@ -35,7 +37,8 @@ public class PSNRTracker {
 		loadI2();
 		double psnr = getPSNR();
 		if(psnr < 15){
-			log.info("ALARME!!!!!! PSNR:" + psnr);
+			log.info("Sending email for psnr " + psnr);
+			mailSender.sendMail("<p>Warning !!! PSNR: " + psnr + "</p><a href=\"https://83.194.12.58\">CAMERA</a>");
 		}
 	}
 	
