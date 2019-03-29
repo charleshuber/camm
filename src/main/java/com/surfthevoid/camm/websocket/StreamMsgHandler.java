@@ -26,7 +26,7 @@ public class StreamMsgHandler extends TextWebSocketHandler {
 	protected VideoSource videoSource;
 	private byte[] currentBinary;
 	private Map<String, WebSocketSession> sessions = new HashMap<>();
-	private Map<String, WebSocketSession> sessionsToDelete = new HashMap<>();
+	private Map<String, WebSocketSession> sessionsToUnregister = new HashMap<>();
 
 	public StreamMsgHandler(VideoSource videoSource) throws JsonProcessingException {
 		this.videoSource = videoSource;
@@ -39,7 +39,7 @@ public class StreamMsgHandler extends TextWebSocketHandler {
 			if (value.equalsIgnoreCase("data")) {
 				register(session);
 			} else if (value.equalsIgnoreCase("close")) {
-				markAsToClose(session);
+				closeAndMarkAsToUnregister(session);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -49,14 +49,14 @@ public class StreamMsgHandler extends TextWebSocketHandler {
 	@Override
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
 		if (closeStatus != CloseStatus.NORMAL) {
-			markAsToClose(session);
+			closeAndMarkAsToUnregister(session);
 		}
 	}
 	
 	@Scheduled(fixedRate=50)
 	private void stream() {
 		synchronized (sessions) {
-			cleanOldSessions();
+			unregisterOldSessions();
 			try {
 				if (sessions.isEmpty()) {
 					log.info("Waiting for new client to register");
@@ -92,18 +92,26 @@ public class StreamMsgHandler extends TextWebSocketHandler {
 		}
 	}
 
-	private void markAsToClose(WebSocketSession session) throws IOException {
+	private void closeAndMarkAsToUnregister(WebSocketSession session) throws IOException {
 		if (session != null) {
-			synchronized (sessionsToDelete) {
-				sessionsToDelete.put(session.getId(), session);
-				log.info("Session " + session.getId() + " is mark as to be deleted");
+			if (session.isOpen()) {
+				try {
+					session.close(CloseStatus.NORMAL);
+					log.info("Session " + session.getId() + " was close correctly");
+				} catch (IOException e) {
+					log.error("Session " + session.getId() + " could not be closed", e);
+				}
+			}
+			synchronized (sessionsToUnregister) {
+				sessionsToUnregister.put(session.getId(), session);
+				log.info("Session " + session.getId() + " is mark as to be unregistered");
 			}
 		}
 	}
 	
-	private void cleanOldSessions(){
-		synchronized (sessionsToDelete) {
-			Iterator<WebSocketSession> it = sessionsToDelete.values().iterator();
+	private void unregisterOldSessions(){
+		synchronized (sessionsToUnregister) {
+			Iterator<WebSocketSession> it = sessionsToUnregister.values().iterator();
 			while(it.hasNext()){
 				WebSocketSession session = it.next();
 				closeAndUnregister(session);
@@ -116,14 +124,7 @@ public class StreamMsgHandler extends TextWebSocketHandler {
 		if (session != null) {
 			synchronized (sessions) {
 				sessions.remove(session.getId());
-				log.info("Session " + session.getId() + " is leaving");
-			}
-			if (session.isOpen()) {
-				try {
-					session.close(CloseStatus.NORMAL);
-				} catch (IOException e) {
-					log.error("Session " + session.getId() + " could not be closed", e);
-				}
+				log.info("Session " + session.getId() + " was unregistered");
 			}
 		}
 	}
