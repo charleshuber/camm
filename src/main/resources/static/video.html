@@ -2,13 +2,27 @@
 <head>
 </head>
 <body>
-	<canvas id="thePlaceToBe" style="display:block; margin: auto"></canvas>
+	<canvas id="thePlaceToBe" style="display: block; margin: auto"></canvas>
+	<div style="margin: auto">
+		<div>
+			<label for="threshold">Seuil de l'alerte</label>
+			<input id="threshold" type="text" onchange="setThreshold" /> 
+		</div>
+		<div>
+			<label for="enable">Activer l'alerte par mail</label>
+			<input id="enable" type="checkbox" onclick="switchAlarme" />
+		</div>
+		<div id="sucessMsg" style="font-weight:bold; color:green"></div>
+		<div id="errorMsg" style="font-weight:bold; color:red"></div>
+	</div>
 </body>
 <script>
+	var threshold = document.querySelector("#threshold");
+	var enable = document.querySelector("#enable");
+	
 	var canvas = document.querySelector("#thePlaceToBe");
 	var ctx = canvas.getContext('2d');
 	var img = new Image();
-	
 	var flip = false;
 	
 	img.onload = function(){
@@ -58,8 +72,61 @@
 	}
 	
 	window.onbeforeunload = closingCode;
+	
 	function closingCode(){
 		exampleSocket.send("close");
+	}
+	
+	
+	threshold.onchange = function(){
+		setThreshold(this.value);
+	}
+	enable.onchange = function(){
+		switchAlarme(this.checked);
+	}
+	
+	get('/alarm/threadshold').then(val => threshold.value = val);
+	get('/alarm/enable').then(val => enable.checked = val);
+	
+	function setThreshold(threshold){
+		get('/alarm/threadshold/' + threshold).then(val => {
+			threshold.value = val;
+			document.querySelector("#sucessMsg").innerHTML = 'Le seuil a été modifié';
+			setTimeout(()=>document.querySelector("#sucessMsg").innerHTML = '', 2000);
+		});
+	}
+	
+	function switchAlarme(enable){
+		get('/alarm/enable/' + enable).then(val => {
+			enable.checked = val;
+			document.querySelector("#sucessMsg").innerHTML = "L'alarme a été " + (val ? "désactivée" : "activée");
+			setTimeout(()=>document.querySelector("#sucessMsg").innerHTML = '', 2000);
+		});
+	}
+	
+	function post(url, data){
+		return request(url, 'POST', data);
+	}
+	
+	function get(url){
+		return request(url, 'GET', null);
+	}
+	
+	function request(url, method, data){
+		return new Promise(function(resolve, reject) {
+			const req = new XMLHttpRequest();
+			req.onreadystatechange = function(event) {
+			    if (this.readyState === XMLHttpRequest.DONE) {
+			        if (this.status === 200) {
+			        	resolve(JSON.parse(this.responseText))
+			        } else {
+			        	reject();
+			        }
+			    }
+			};
+			req.open(method, url, true);
+			req.send(data);
+		});
 	}
 </script>
 </html>

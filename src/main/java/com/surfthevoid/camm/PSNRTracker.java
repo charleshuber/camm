@@ -36,9 +36,12 @@ public class PSNRTracker {
 		I1 = I2;
 		loadI2();
 		double psnr = getPSNR();
-		if(psnr < 15){
-			log.info("Sending email for psnr " + psnr);
-			mailSender.sendMail("<p>Warning !!! PSNR: " + psnr + "</p><a href=\"https://83.194.12.58\">CAMERA</a>");
+		if(psnr < AlarmeController.threshold.get()){
+			log.info("PSNR detected at " + psnr);
+			if(AlarmeController.enable.get()){
+				log.info("Sending email for psnr " + psnr);
+				mailSender.sendMail("<p>Warning !!! PSNR: " + psnr + "</p><a href=\"https://83.194.12.58\">CAMERA</a>");
+			}
 		}
 	}
 	

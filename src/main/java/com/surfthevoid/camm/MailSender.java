@@ -27,7 +27,7 @@ public class MailSender {
 		this.host = "smtp.live.com";
         this.port = 587;
         this.username = "charles.huber@hotmail.fr";
-        this.password = "";
+        this.password = "PhLoToNs_1123";
 	}
 	
     public void sendMail(String msg) {
