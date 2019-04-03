@@ -29,11 +29,15 @@ public class VideoSource {
 	public byte[] getStreamBytes() {
 		Optional<Mat> original = grabFrame(true);
 		if (original.isPresent()) {
-			MatOfByte buf = new MatOfByte();
-			Imgcodecs.imencode(".jpg", original.get(), buf);
-			return buf.toArray();
+			return toJPEG(original.get());
 		}
 		return new byte[0];
+	}
+	
+	public byte[] toJPEG(Mat img){
+		MatOfByte buf = new MatOfByte();
+		Imgcodecs.imencode(".jpg", img, buf);
+		return buf.toArray();
 	}
 
 	/**

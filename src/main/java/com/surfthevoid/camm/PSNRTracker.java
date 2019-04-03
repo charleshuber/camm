@@ -40,7 +40,8 @@ public class PSNRTracker {
 			log.info("PSNR detected at " + psnr);
 			if(AlarmeController.enable.get()){
 				log.info("Sending email for psnr " + psnr);
-				mailSender.sendMail("<p>Warning !!! PSNR: " + psnr + "</p><a href=\"https://83.194.12.58\">CAMERA</a>");
+				String msg = "<p>Warning !!! PSNR: " + psnr + "</p><a href=\"https://83.194.12.58\">CAMERA</a>";
+				mailSender.sendMail(msg, videoSource.toJPEG(I1), videoSource.toJPEG(I2));
 			}
 		}
 	}
