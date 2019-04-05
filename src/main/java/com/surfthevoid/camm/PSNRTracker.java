@@ -1,7 +1,5 @@
 package com.surfthevoid.camm;
 
-import java.util.Optional;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.opencv.core.Core;
@@ -33,8 +31,8 @@ public class PSNRTracker {
 		if(initPhase()){
 			return;
 		}
-		I1 = I2;
-		loadI2();
+		I2.copyTo(I1);
+		videoSource.grabFrame(false, I2);
 		double psnr = getPSNR();
 		if(psnr < AlarmeController.threshold.get()){
 			log.info("PSNR detected at " + psnr);
@@ -52,36 +50,19 @@ public class PSNRTracker {
 	
 	private Boolean initPrev(){
 		if(I1 == null){
-			return loadI1();
+			I1 = new Mat();
+			videoSource.grabFrame(false, I1);
+			return true;
 		}
 		return false;
 	}
 	
 	private Boolean initCurrent(){
 		if(I2 == null){
-			return loadI2();
+			I2 = new Mat();
+			videoSource.grabFrame(false, I2);
 		}
 		return false;
-	}
-	
-	private Boolean loadI1(){
-		Optional<Mat> optMat = videoSource.grabFrame(false);
-		videoSource.close(false);
-		if(optMat.isPresent()){
-			I1 = optMat.get();
-			return true;
-		}
-		return false;	
-	}
-	
-	private Boolean loadI2(){
-		Optional<Mat> optMat = videoSource.grabFrame(false);
-		videoSource.close(false);
-		if(optMat.isPresent()){
-			I2 = optMat.get();
-			return true;
-		}
-		return false;	
 	}
 
 	private double getPSNR() {
