@@ -6,6 +6,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
+import org.opencv.core.Size;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
@@ -21,12 +22,28 @@ public class VideoSource {
 	private String cameraId;
 	private VideoCapture capture = new VideoCapture();
 	private Boolean streaming = new Boolean(false);
+	private Mat frame = new Mat();
 
 	public VideoSource(@Value("${cammurl}") String cameraId) {
 		this.cameraId = cameraId;
 	}
-
-	public byte[] getStreamBytes() {
+	
+	public byte[] getRawStreamBytes() {
+		Optional<Mat> original = grabFrame(true);
+		if (original.isPresent()) {
+			Mat img = original.get();
+			img.type();
+			img.channels();
+			Size size = img.size();
+			int bytes = (int) (size.width * size.height);
+			byte[] data = new byte[bytes];
+			img.get(0, 0, data);
+			return data;
+		}
+		return new byte[0];
+	}
+	
+	public byte[] getJPEGStreamBytes() {
 		Optional<Mat> original = grabFrame(true);
 		if (original.isPresent()) {
 			return toJPEG(original.get());
@@ -52,7 +69,6 @@ public class VideoSource {
 				this.streaming = true;
 			}
 			if (open()) {
-				Mat frame = new Mat();
 				// check if the capture is open
 				try {
 					// read the current frame

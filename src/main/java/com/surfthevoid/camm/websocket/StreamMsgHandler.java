@@ -54,7 +54,7 @@ public class StreamMsgHandler extends TextWebSocketHandler {
 	}
 	
 	@Scheduled(fixedRate=50)
-	private void stream() {
+	private void rawStream() {
 		synchronized (sessions) {
 			unregisterOldSessions();
 			try {
@@ -63,7 +63,7 @@ public class StreamMsgHandler extends TextWebSocketHandler {
 					videoSource.close(true);
 					sessions.wait();
 				}
-				currentBinary = videoSource.getStreamBytes();
+				currentBinary = videoSource.getJPEGStreamBytes();
 				// WARN: do not use parallel stream, otherwise the messages
 				// will be not send in the synchronized transaction
 				sessions.values().stream().filter(WebSocketSession::isOpen)
