@@ -8,6 +8,7 @@
 	<properties>
 		<java.version>1.8</java.version>
 		<javacv.version>1.4.4</javacv.version>
+		<opencv.jar>/home/pi/opencv/opencv/build/bin/opencv-410.jar</opencv.jar>
 	</properties>
 
 	<parent>
@@ -35,6 +36,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
 					<executable>true</executable>
+					<includeSystemScope>true</includeSystemScope>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -62,8 +64,8 @@
 			<groupId>opencv</groupId>
 			<artifactId>opencv</artifactId>
 			<scope>system</scope>
-			<version>4.0.1</version>
-			<systemPath>${project.basedir}/lib/opencv/opencv-401.jar</systemPath>
+			<version>4.1.0</version>
+			<systemPath>${opencv.jar}</systemPath>
 		</dependency>
 
 
