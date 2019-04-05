@@ -53,7 +53,7 @@ public class StreamMsgHandler extends TextWebSocketHandler {
 		}
 	}
 	
-	@Scheduled(fixedRate=50)
+	@Scheduled(fixedRate=100)
 	private void rawStream() {
 		synchronized (sessions) {
 			unregisterOldSessions();

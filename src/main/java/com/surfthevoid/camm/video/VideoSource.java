@@ -29,7 +29,7 @@ public class VideoSource {
 	}
 	
 	public byte[] getRawStreamBytes() {
-		Optional<Mat> original = grabFrame(true);
+		Optional<Mat> original = grabFrame(true, null);
 		if (original.isPresent()) {
 			Mat img = original.get();
 			img.type();
@@ -44,7 +44,7 @@ public class VideoSource {
 	}
 	
 	public byte[] getJPEGStreamBytes() {
-		Optional<Mat> original = grabFrame(true);
+		Optional<Mat> original = grabFrame(true, null);
 		if (original.isPresent()) {
 			return toJPEG(original.get());
 		}
@@ -63,12 +63,13 @@ public class VideoSource {
 	 * @return the {@link Mat} to show
 	 */
 
-	public Optional<Mat> grabFrame(Boolean streaming) {
+	public Optional<Mat> grabFrame(Boolean streaming, Mat result) {
 		synchronized (cameraId) {
 			if(streaming){
 				this.streaming = true;
 			}
 			if (open()) {
+				Mat frame = result == null ? this.frame : result;
 				// check if the capture is open
 				try {
 					// read the current frame
