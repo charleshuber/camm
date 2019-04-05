@@ -60,10 +60,10 @@ public class StreamMsgHandler extends TextWebSocketHandler {
 			try {
 				if (sessions.isEmpty()) {
 					log.info("Waiting for new client to register");
-					videoSource.close(true);
+					videoSource.stopStreaming();
 					sessions.wait();
 				}
-				currentBinary = videoSource.getJPEGStreamBytes();
+				currentBinary = videoSource.getRawStreamBytes();
 				// WARN: do not use parallel stream, otherwise the messages
 				// will be not send in the synchronized transaction
 				sessions.values().stream().filter(WebSocketSession::isOpen)

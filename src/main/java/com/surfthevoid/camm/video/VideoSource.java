@@ -32,8 +32,6 @@ public class VideoSource {
 		Optional<Mat> original = grabFrame(true, null);
 		if (original.isPresent()) {
 			Mat img = original.get();
-			img.type();
-			img.channels();
 			Size size = img.size();
 			int bytes = (int) (size.width * size.height);
 			byte[] data = new byte[bytes];
@@ -87,7 +85,15 @@ public class VideoSource {
 		}
 	}
 	
-	public void close(Boolean streaming) {
+	public void stopStreaming(){
+		close(true);
+	}
+	
+	public void stopCamera(){
+		close(false);
+	}
+	
+	private void close(Boolean streaming) {
 		synchronized (cameraId) {
 			if(!streaming && this.streaming){
 				return;
@@ -112,7 +118,7 @@ public class VideoSource {
 	@Override
 	protected void finalize() throws Throwable {
 		super.finalize();
-		this.close(true);
+		this.stopStreaming();
 	}
 
 }

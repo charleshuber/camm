@@ -5,25 +5,48 @@
 	<canvas id="thePlaceToBe" style="display: block; margin: auto"></canvas>
 	<div style="margin: auto">
 		<div>
-			<label for="threshold">Seuil de l'alerte</label>
-			<input id="threshold" type="text" onchange="setThreshold" /> 
+			<label for="threshold">Seuil de l'alerte</label> <input
+				id="threshold" type="text" onchange="setThreshold" />
 		</div>
 		<div>
-			<label for="enable">Activer l'alerte par mail</label>
-			<input id="enable" type="checkbox" onclick="switchAlarme" />
+			<label for="enable">Activer l'alerte par mail</label> <input
+				id="enable" type="checkbox" onclick="switchAlarme" />
 		</div>
-		<div id="sucessMsg" style="font-weight:bold; color:green"></div>
-		<div id="errorMsg" style="font-weight:bold; color:red"></div>
+		<div id="sucessMsg" style="font-weight: bold; color: green"></div>
+		<div id="errorMsg" style="font-weight: bold; color: red"></div>
 	</div>
 </body>
 <script>
 	var threshold = document.querySelector("#threshold");
 	var enable = document.querySelector("#enable");
 	
+	var height = 480;
+	var width = 640;
 	var canvas = document.querySelector("#thePlaceToBe");
+	canvas.height = height;
+	canvas.width = width;
 	var ctx = canvas.getContext('2d');
+	var monImageData = ctx.createImageData(width, height);
 	var img = new Image();
 	var flip = false;
+	
+	var blobloaded = function(completionEvent) { 
+		if(this.readyState == 2){
+			var imageData = ctx.getImageData(0, 0, width, height);
+			  var data = imageData.data;
+			var buffer = this.result;
+			var view = new DataView(buffer);
+			for(var i=0; i< buffer.byteLength; i++){
+				var y = i*4;
+				var pixel = view.getUint8(i);
+				data[y] = pixel;
+				data[++y] = pixel;
+				data[++y] = pixel;
+				data[++y] = 255;
+			}
+			ctx.putImageData(imageData, 0, 0);
+		}
+	}
 	
 	img.onload = function(){
 		if(!flip){
@@ -62,9 +85,14 @@
 	}
 
 	function handleData(blob) {
+		/*
 		var urlCreator = window.URL || window.webkitURL;
 		var imageUrl = urlCreator.createObjectURL(blob);
-		img.src = imageUrl;	
+		img.src = imageUrl;
+		*/
+		var reader = new FileReader();
+		reader.onload = blobloaded;
+		reader.readAsArrayBuffer(blob);
 	}
 
 	function isString(s) {
