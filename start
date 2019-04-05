@@ -1,0 +1,5 @@
+#!/bin/bash
+
+export JAVA_OPTS="-Xmx1024m -Xms256m -Djava.library.path=/usr/local/share/java/opencv4/:/usr/java/packages/lib/arm:/lib:/usr/lib:/usr/lib/arm-linux-gnueabihf:/usr/local/apr/lib:/usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt/lib/arm:/usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt/lib/arm:/usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt/jre/lib/arm/jli:/usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt/jre/lib/arm:/usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt/jre/lib/arm/server"
+
+target/camm-1.0.0.jar
