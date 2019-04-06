@@ -12,9 +12,9 @@ import org.springframework.stereotype.Component;
 import com.surfthevoid.camm.video.VideoSource;
 
 @Component
-public class PSNRTracker {
+public class NormalizedDifferenceTracker {
 	
-	private final Log log = LogFactory.getLog(PSNRTracker.class);
+	private final Log log = LogFactory.getLog(NormalizedDifferenceTracker.class);
 	
 	private MailSender mailSender;
 	private VideoSource videoSource;
@@ -22,7 +22,7 @@ public class PSNRTracker {
 	private Mat I2;
 	Mat psnrDiff = new Mat();
 	
-	public PSNRTracker(VideoSource videoSource, MailSender mailSender){
+	public NormalizedDifferenceTracker(VideoSource videoSource, MailSender mailSender){
 		this.videoSource = videoSource;
 		this.mailSender = mailSender;
 	}
@@ -34,12 +34,12 @@ public class PSNRTracker {
 		}
 		I2.copyTo(I1);
 		videoSource.grabFrame(false, I2);
-		double psnr = getPSNR();
-		if(psnr < AlarmeController.threshold.get()){
-			log.info("PSNR detected at " + psnr);
+		double normalizedDifference = getNormalizedDifference();
+		if(normalizedDifference < AlarmeController.threshold.get()){
+			log.info("Normalized difference at " + normalizedDifference);
 			if(AlarmeController.enable.get()){
-				log.info("Sending email for psnr " + psnr);
-				String msg = "<p>Warning !!! PSNR: " + psnr + "</p><a href=\"https://83.194.12.58\">CAMERA</a>";
+				log.info("Sending email for psnr " + normalizedDifference);
+				String msg = "<p>Warning !!! Normalized difference: " + normalizedDifference + "</p><a href=\"https://83.194.12.58\">CAMERA</a>";
 				mailSender.sendMail(msg, videoSource.toJPEG(I1), videoSource.toJPEG(I2));
 			}
 		}
@@ -66,22 +66,20 @@ public class PSNRTracker {
 		return false;
 	}
 
-	private double getPSNR() {
+	private double getNormalizedDifference() {
 		try{
 			Core.absdiff(I1, I2, psnrDiff); // |I1 - I2|
-			psnrDiff.convertTo(psnrDiff, CvType.CV_32FC1); // cannot make a square on 8 bits
-			psnrDiff = psnrDiff.mul(psnrDiff); // |I1 - I2|^2
 			Scalar s = Core.sumElems(psnrDiff); // sum elements per channel
 			double sse = s.val[0] + s.val[1] + s.val[2]; // sum channels
 			if (sse <= 1e-10) // for small values return zero
 				return 0;
 			else {
 				double mse = sse / (double) (I1.channels() * I1.total());
-				double psnr = 10.0 * Math.log10((255 * 255) / mse);
-				return psnr;
+				double normalizedDifference = 10.0 * Math.log10(255 / mse);
+				return normalizedDifference;
 			}
 		} catch(Exception e){
-			log.error("Exception during psnr computation !", e);
+			log.error("Exception during difference computation !", e);
 		}
 		// do not detect anything in case of an exception;
 		return 100.0;
