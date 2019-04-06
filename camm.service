@@ -1,0 +1,17 @@
+[Unit]
+Description=Alarme camera
+
+[Service]
+Type=simple
+
+RemainAfterExit=no
+ExecStart=/home/pi/camm/start 
+
+User=pi
+Group=pi
+UMask=007
+
+Restart=on-failure
+
+# Configures the time to wait before service is stopped forcefully.
+TimeoutStopSec=300
