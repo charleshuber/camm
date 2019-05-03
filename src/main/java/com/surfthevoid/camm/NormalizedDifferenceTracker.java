@@ -3,10 +3,8 @@ package com.surfthevoid.camm;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.opencv.core.Core;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.surfthevoid.camm.video.VideoSource;
@@ -27,13 +25,13 @@ public class NormalizedDifferenceTracker {
 		this.mailSender = mailSender;
 	}
 	
-	@Scheduled(fixedRate = 1000)
+	//@Scheduled(fixedRate = 1000)
 	public void checkDiff(){
 		if(initPhase()){
 			return;
 		}
 		I2.copyTo(I1);
-		videoSource.grabFrame(false, I2);
+		videoSource.grabGrayFrame(false, I2);
 		double normalizedDifference = getNormalizedDifference();
 		if(normalizedDifference < AlarmeController.threshold.get()){
 			log.info("Normalized difference at " + normalizedDifference);
@@ -52,7 +50,7 @@ public class NormalizedDifferenceTracker {
 	private Boolean initPrev(){
 		if(I1 == null){
 			I1 = new Mat();
-			videoSource.grabFrame(false, I1);
+			videoSource.grabGrayFrame(false, I1);
 			return true;
 		}
 		return false;
@@ -61,7 +59,7 @@ public class NormalizedDifferenceTracker {
 	private Boolean initCurrent(){
 		if(I2 == null){
 			I2 = new Mat();
-			videoSource.grabFrame(false, I2);
+			videoSource.grabGrayFrame(false, I2);
 		}
 		return false;
 	}

@@ -1,3 +1,5 @@
 /target/
 /.classpath
 /.project
+/__pycache__/
+/.settings

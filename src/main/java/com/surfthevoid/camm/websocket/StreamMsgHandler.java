@@ -63,7 +63,7 @@ public class StreamMsgHandler extends TextWebSocketHandler {
 					videoSource.stopStreaming();
 					sessions.wait();
 				}
-				currentBinary = videoSource.getRawStreamBytes();
+				currentBinary = videoSource.getGrayRawStreamBytes();
 				// WARN: do not use parallel stream, otherwise the messages
 				// will be not send in the synchronized transaction
 				sessions.values().stream().filter(WebSocketSession::isOpen)
