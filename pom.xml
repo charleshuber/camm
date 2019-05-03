@@ -10,6 +10,15 @@
 		<javacv.version>1.4.4</javacv.version>
 		<opencv.jar>/home/pi/opencv/opencv/build/bin/opencv-410.jar</opencv.jar>
 	</properties>
+	
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<properties>
+				<opencv.jar>/home/charles/opencv/opencv/build/bin/opencv-410.jar</opencv.jar>
+			</properties>
+		</profile>
+	</profiles>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -21,7 +30,7 @@
         		<dependency>
             			<groupId>org.apache.tomcat.embed</groupId>
             			<artifactId>tomcat-embed-core</artifactId>
-            			<version>9.0.12</version>
+            			<version>9.0.17</version>
         		</dependency>
     		</dependencies>
 	</dependencyManagement>
