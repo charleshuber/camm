@@ -38,7 +38,7 @@ public class HumanTracker {
 		this.HRPort = HRPort;
 	}
 	
-	@Scheduled(fixedRate = 1000)
+	//@Scheduled(fixedRate = 1000)
 	public void checkDiff(){
 		Optional<byte[]> optHumanCapture = trackHuman(getBytes());
 		if(optHumanCapture.isPresent()){

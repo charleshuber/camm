@@ -5,6 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.surfthevoid.camm.video.VideoSource;
@@ -25,7 +26,7 @@ public class NormalizedDifferenceTracker {
 		this.mailSender = mailSender;
 	}
 	
-	//@Scheduled(fixedRate = 1000)
+	@Scheduled(fixedRate = 1000)
 	public void checkDiff(){
 		if(initPhase()){
 			return;
