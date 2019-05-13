@@ -28,8 +28,8 @@ public class VideoSource {
 		this.cameraId = cameraId;
 	}
 	
-	public byte[] getRawStreamBytes() {
-		Optional<Mat> original = grabFrame(true, null);
+	public byte[] getGrayRawStreamBytes() {
+		Optional<Mat> original = grabGrayFrame(true, null);
 		if (original.isPresent()) {
 			Mat img = original.get();
 			Size size = img.size();
@@ -37,6 +37,14 @@ public class VideoSource {
 			byte[] data = new byte[bytes];
 			img.get(0, 0, data);
 			return data;
+		}
+		return new byte[0];
+	}
+	
+	public byte[] getGrayJPEGStreamBytes() {
+		Optional<Mat> original = grabGrayFrame(true, null);
+		if (original.isPresent()) {
+			return toJPEG(original.get());
 		}
 		return new byte[0];
 	}
@@ -61,7 +69,15 @@ public class VideoSource {
 	 * @return the {@link Mat} to show
 	 */
 
+	public Optional<Mat> grabGrayFrame(Boolean streaming, Mat result) {
+		return grabFrame(streaming, result, true);
+	}
+	
 	public Optional<Mat> grabFrame(Boolean streaming, Mat result) {
+		return grabFrame(streaming, result, false);
+	}
+	
+	private Optional<Mat> grabFrame(Boolean streaming, Mat result, Boolean gray) {
 		synchronized (cameraId) {
 			if(streaming){
 				this.streaming = true;
@@ -73,7 +89,7 @@ public class VideoSource {
 					// read the current frame
 					this.capture.read(frame);
 					// if the frame is not empty, process it
-					if (!frame.empty()) {
+					if (!frame.empty() && gray) {
 						Imgproc.cvtColor(frame, frame, Imgproc.COLOR_BGR2GRAY);
 					}
 					return Optional.of(frame);

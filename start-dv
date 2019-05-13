@@ -1,0 +1,5 @@
+#!/bin/bash
+
+export JAVA_OPTS="-Xmx128m -Xms128m -Djava.library.path=/usr/local/share/java/opencv4/:/usr/java/packages/lib/amd64:/usr/lib/x86_64-linux-gnu/jni:/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:/usr/lib/jni:/lib:/usr/lib"
+
+target/camm-1.0.0.jar

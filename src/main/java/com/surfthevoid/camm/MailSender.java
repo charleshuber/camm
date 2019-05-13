@@ -33,7 +33,7 @@ public class MailSender {
 		this.password = "PhLoToNs_1123";
 	}
 
-	public void sendMail(String msg, byte[] jpg1, byte[] jpg2) {
+	public void sendMail(String msg, byte[]... jpegImages) {
 
 		Properties prop = new Properties();
 		prop.put("mail.smtp.auth", true);
@@ -57,26 +57,19 @@ public class MailSender {
 
 			MimeBodyPart mimeBodyPart = new MimeBodyPart();
 			mimeBodyPart.setContent(msg, "text/html");
-
-			DataSource dataSource1 = new ByteArrayDataSource(jpg1, "application/jpg");
-			MimeBodyPart img1BodyPart = new MimeBodyPart();
-			img1BodyPart.setDataHandler(new DataHandler(dataSource1));
-			img1BodyPart.setFileName("img1.jpg");
-
-			DataSource dataSource2 = new ByteArrayDataSource(jpg2, "application/jpg");
-			MimeBodyPart img2BodyPart = new MimeBodyPart();
-			img2BodyPart.setDataHandler(new DataHandler(dataSource2));
-			img2BodyPart.setFileName("img2.jpg");
-
 			Multipart multipart = new MimeMultipart();
 			multipart.addBodyPart(mimeBodyPart);
-			multipart.addBodyPart(img1BodyPart);
-			multipart.addBodyPart(img2BodyPart);
-
+			
+			for(int i=0; i < jpegImages.length; i++){
+				byte[] jpg = jpegImages[i];
+				DataSource dataSource = new ByteArrayDataSource(jpg, "application/jpg");
+				MimeBodyPart imgBodyPart = new MimeBodyPart();
+				imgBodyPart.setDataHandler(new DataHandler(dataSource));
+				imgBodyPart.setFileName("img" + i + ".jpg");
+				multipart.addBodyPart(imgBodyPart);
+			}
 			message.setContent(multipart);
-
 			Transport.send(message);
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
