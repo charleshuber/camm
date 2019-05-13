@@ -61,7 +61,7 @@ class ConnectionHandler(threading.Thread):
 			self.connection.close()
 
 if __name__ == "__main__":
-	model_path = '/home/charles/workspaces/camm/camm/hr/frozen_inference_graph.pb'
+	model_path = '/home/pi/camm/hr/frozen_inference_graph.pb'
 	odapi = DetectorAPI(path_to_ckpt=model_path)
 	threshold = 0.5
 	server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
